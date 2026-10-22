@@ -11,10 +11,20 @@ let selectedFile;
 let previewURL;
 let worker;
 let busy = false;
+let needsRender = false;
+
+function updateStateLabel() {
+  document.querySelector('#state-label').textContent = busy ? '处理中'
+    : status.dataset.error === 'true' ? '需重试'
+    : needsRender ? '待生成'
+    : plot.data ? '已生成' : '待开始';
+}
 
 function setStatus(message, error = false) {
   status.textContent = message;
   status.dataset.error = String(error);
+  status.parentElement.dataset.error = String(error);
+  updateStateLabel();
 }
 
 function setBusy(value) {
@@ -23,6 +33,7 @@ function setBusy(value) {
   renderButton.disabled = value || !selectedFile;
   renderButton.textContent = value ? '正在处理…' : '生成可视化';
   plot.setAttribute('aria-busy', String(value));
+  updateStateLabel();
 }
 
 async function selectFile(file) {
@@ -37,6 +48,7 @@ async function selectFile(file) {
   }
   if (previewURL) URL.revokeObjectURL(previewURL);
   selectedFile = file;
+  needsRender = true;
   previewURL = URL.createObjectURL(file);
   document.querySelector('#preview').src = previewURL;
   document.querySelector('#preview-wrap').hidden = false;
@@ -60,13 +72,23 @@ sampleButton.addEventListener('click', async () => {
   }
 });
 
+function settingsChanged() {
+  if (!selectedFile) return;
+  needsRender = true;
+  setStatus(plot.data
+    ? '设置已更改，请重新生成。当前画布保留上次结果。'
+    : '设置已更改，点击“生成可视化”。');
+}
+
 spaceInput.addEventListener('change', () => {
   document.querySelector('#space-description').textContent = {
-    HSV: '沿用原始 HSV-ds.py 的球形映射。',
-    HSL: '沿用原始 HSL-ds.py 的双圆锥映射。',
-    CIELCH: '沿用原始 CIELCH-ds.py 的 Lab / LCH 转换与圆柱参考线。',
+    HSV: '观察色相、饱和度与明度的分布。',
+    HSL: '观察色相、饱和度与亮度的双圆锥分布。',
+    CIELCH: '观察色相、色度与感知明度的分布。',
   }[spaceInput.value];
+  settingsChanged();
 });
+samplesInput.addEventListener('change', settingsChanged);
 
 function createWorker() {
   const instance = new Worker('python-worker.js');
@@ -85,7 +107,8 @@ function createWorker() {
         figure.layout.autosize = true;
         figure.layout.showlegend = false;
         figure.layout.uirevision = spaceInput.value;
-        figure.layout.margin = { l: 0, r: 0, b: 0, t: 30 };
+        figure.layout.margin = { l: 0, r: 0, b: 0, t: 0 };
+        figure.layout.title = { text: '' };
         figure.layout.paper_bgcolor = '#0a0a0a';
         figure.layout.font = { ...figure.layout.font, color: '#dce5df' };
         document.querySelector('#empty')?.remove();
@@ -93,7 +116,10 @@ function createWorker() {
           responsive: true, displaylogo: false, scrollZoom: true,
           toImageButtonOptions: { filename: 'image-color-distribution', format: 'png' },
         });
-        setStatus(`${spaceInput.value} · ${data.points.toLocaleString()} 个颜色点 · 拖动旋转，滚轮缩放`);
+        needsRender = false;
+        document.querySelector('#view-space').textContent = spaceInput.value;
+        document.querySelector('#point-count').textContent = `${data.points.toLocaleString()} 个颜色点`;
+        setStatus('拖动点云可旋转视角，滚轮可缩放。');
       } catch (error) {
         setStatus(`图表显示失败：${error.message}`, true);
       } finally {
