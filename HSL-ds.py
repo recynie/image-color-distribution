@@ -36,8 +36,12 @@ def rgb_to_hsl(rgb_img):
     return np.stack([H, S, L], axis=-1)
 
 # 读取图像并降采样
-image = io.imread('test-images/test6.jpeg')  # 替换为你的图片路径
-image_small = transform.resize(image, (100, 100), anti_aliasing=True)
+# 网页通过共享入口传入 RGB 图像；直接运行时继续使用示例图片。
+image = globals().get('INPUT_IMAGE')
+if image is None:
+    image = io.imread('test-images/test6.jpeg')
+side = globals().get('SAMPLE_SIDE', 100)
+image_small = transform.resize(image, (side, side), anti_aliasing=True)
 
 # 转换为HSL颜色空间
 hsl = rgb_to_hsl(image_small[..., :3])
@@ -134,4 +138,5 @@ layout = go.Layout(
 fig = go.Figure(data=[scatter] + create_cone_reference(), layout=layout)
 
 # 显示交互式图形
-fig.show()
+if globals().get('SHOW_FIGURE', True):
+    fig.show()

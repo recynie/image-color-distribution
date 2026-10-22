@@ -5,8 +5,11 @@ from skimage.color import rgb2lab
 
 # 读取图像并转换为RGB数组
 image_path = 'test-images/test2.jpeg'  # 替换为你的图片路径
-img = Image.open(image_path).convert('RGB')
-img_rgb = np.array(img)
+# 网页通过共享入口传入 RGB 图像；直接运行时继续使用示例图片。
+img_rgb = globals().get('INPUT_IMAGE')
+if img_rgb is None:
+    img = Image.open(image_path).convert('RGB')
+    img_rgb = np.array(img)
 
 # 转换为CIELAB色彩空间
 img_lab = rgb2lab(img_rgb)
@@ -22,8 +25,8 @@ h_deg = np.degrees(h_rad) % 360  # 转换为0-360度
 # 展平数组并降采样
 height, width = img_rgb.shape[:2]
 num_pixels = height * width
-max_samples = 2000
-step_size = max(1, num_pixels // max_samples)
+max_samples = globals().get('MAX_SAMPLES', 2000)
+step_size = max(1, int(np.ceil(num_pixels / max_samples)))
 
 # 创建采样掩码
 xx, yy = np.meshgrid(np.arange(width), np.arange(height))
@@ -149,7 +152,8 @@ fig.update_layout(
 )
 
 # 显示图表
-fig.show()
+if globals().get('SHOW_FIGURE', True):
+    fig.show()
 
 # 保存为HTML文件
 # fig.write_html("cielch_cylinder_outline_black.html")

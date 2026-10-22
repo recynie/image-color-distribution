@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="在浏览器中探索图片的 HSV、HSL 和 CIELCH 三维颜色分布。图片仅在本地处理。">
+  <title>Image Color Distribution · 图像颜色分布</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.plot.ly/plotly-gl3d-3.1.0.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <div><p class="eyebrow">IMAGE COLOR DISTRIBUTION</p><h1>探索图片里的颜色</h1>
+    <p class="muted">用三维点云观察色相、饱和度与明暗。拖动旋转，滚轮缩放。</p></div>
+    <a href="https://github.com/recynie/image-color-distribution" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+  </header>
+  <main>
+    <aside class="panel">
+      <h2>选择图片</h2>
+      <label for="image-file">从设备读取 JPEG、PNG 或 WebP</label>
+      <input id="image-file" type="file" accept="image/jpeg,image/png,image/webp">
+      <p class="muted small">最大 20 MB。图片仅在你的浏览器中处理，不上传服务器。</p>
+      <button id="sample" type="button">试用示例图片</button>
+      <figure id="preview-wrap" hidden><img id="preview" alt="所选图片预览"><figcaption id="filename"></figcaption></figure>
+      <label for="space">色彩空间</label>
+      <select id="space"><option value="HSV">HSV · 球形分布</option><option value="HSL">HSL · 双圆锥</option><option value="CIELCH">CIELCH · 圆柱分布</option></select>
+      <p class="muted small" id="space-description">沿用原始 HSV-ds.py 的球形映射。</p>
+      <label for="samples">点云精度</label>
+      <select id="samples"><option value="50">轻量 · 最多 2,500 点</option><option value="100" selected>标准 · 最多 10,000 点</option><option value="150">精细 · 最多 22,500 点</option></select>
+      <button id="render" type="button" disabled>生成可视化</button>
+      <p class="muted small">首次生成需下载 Python 运行时与科学计算依赖，可能需要数十秒。计算在后台线程执行。</p>
+    </aside>
+    <section class="visualization" aria-label="三维颜色分布">
+      <p id="status" role="status" aria-live="polite">请选择一张图片，或试用示例图片。</p>
+      <div id="plot" role="region" aria-label="可旋转的三维颜色点云"><div id="empty">每一个点，都是图片中的一种颜色。</div></div>
+    </section>
+  </main>
+  <footer>Python + Pyodide + Plotly · 复用项目原有颜色计算与图表配置 · 无需安装软件</footer>
+</body>
+</html>

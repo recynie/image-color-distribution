@@ -1,0 +1,33 @@
+:root { color-scheme: light; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #243331; background: #f4f6f4; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header, main, footer { max-width: 1440px; margin: auto; padding: 28px 36px; }
+header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+h1 { font-size: clamp(1.7rem, 3vw, 2.5rem); margin: 8px 0 12px; letter-spacing: -.04em; }
+h2 { font-size: 1.1rem; margin: 0 0 20px; }
+a { color: #256557; white-space: nowrap; }
+.eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .18em; color: #256557; margin: 0; }
+.muted { color: #62716b; line-height: 1.65; }
+.small { font-size: .82rem; }
+main { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; padding-top: 0; }
+.panel { background: white; border: 1px solid #dce3dd; border-radius: 12px; padding: 24px; }
+label { display: block; font-size: .85rem; font-weight: 600; margin: 20px 0 9px; }
+select, button, input { font: inherit; max-width: 100%; }
+select, button { width: 100%; padding: 11px 12px; border: 1px solid #c8d4cc; border-radius: 6px; background: white; color: inherit; }
+input { width: 100%; font-size: .8rem; }
+button { cursor: pointer; }
+button:hover:enabled { background: #edf3ef; }
+button:disabled { cursor: not-allowed; opacity: .5; }
+#render { background: #256557; color: white; border-color: #256557; margin-top: 20px; }
+#render:hover:enabled { background: #1b5044; }
+:focus-visible { outline: 3px solid #5c9c86; outline-offset: 3px; }
+figure { margin: 20px 0; }
+#preview { width: 100%; max-height: 200px; object-fit: contain; background: #edf0ed; border-radius: 6px; }
+figcaption { font-size: .75rem; color: #62716b; overflow-wrap: anywhere; margin-top: 8px; }
+.visualization { background: #0a0a0a; border-radius: 12px; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
+#status { color: #c6d6ce; background: #18221d; margin: 0; padding: 16px 20px; font-size: .85rem; min-height: 52px; }
+#status[data-error="true"] { color: #ffcec9; background: #48231f; }
+#plot { min-height: 560px; flex: 1; position: relative; }
+#empty { position: absolute; inset: 0; display: grid; place-items: center; color: #9cab9f; text-align: center; padding: 24px; }
+footer { padding-top: 0; font-size: .75rem; color: #62716b; }
+@media (max-width: 760px) { header, main, footer { padding: 20px 16px; } main { grid-template-columns: 1fr; padding-top: 0; } #plot { min-height: 420px; } header > a { font-size: .8rem; } }
